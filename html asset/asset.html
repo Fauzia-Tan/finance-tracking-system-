@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hayag: open books for shared money</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F5F7;--surface:#fff;--ink:#0E1B2C;--muted:#5B6878;--line:#DCE2E8;--brand:#1E3FA8;--on-brand:#fff;--gold:#F2B632;--ok:#17794A;--okbg:#E3F4EA;--warn:#8A5200;--warnbg:#FFF0D1;--bad:#B3261E;--badbg:#FBE4E2;
+--head:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1320;--surface:#141D2E;--ink:#E8EDF5;--muted:#9AA7BA;--line:#26344B;--brand:#8AA3F7;--on-brand:#0C1320;--ok:#5FD39A;--okbg:#10291E;--warn:#F2B632;--warnbg:#2E2410;--bad:#FF8F86;--badbg:#35171A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1320;--surface:#141D2E;--ink:#E8EDF5;--muted:#9AA7BA;--line:#26344B;--brand:#8AA3F7;--on-brand:#0C1320;--ok:#5FD39A;--okbg:#10291E;--warn:#F2B632;--warnbg:#2E2410;--bad:#FF8F86;--badbg:#35171A;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body)}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px 60px}
+header{padding:20px 0 14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold)}
+.brand{font:800 26px/1 var(--head);letter-spacing:-.02em;color:var(--brand)}
+.org{font-size:14px;color:var(--muted);margin-top:4px}
+.seg{display:inline-flex;border:1.5px solid var(--brand);border-radius:999px;overflow:hidden}
+.seg button{font:600 14px var(--body);padding:8px 14px;border:0;background:transparent;color:var(--brand);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.header-tools{display:flex;align-items:center;gap:10px;position:relative}
+.settings-wrap{position:relative}
+.settings-btn{width:38px;height:38px;border:1.5px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;font-size:18px}
+.settings-menu{position:absolute;right:0;top:46px;width:180px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(14,27,44,.16);z-index:30}
+.settings-menu[hidden]{display:none}
+.settings-menu button{width:100%;padding:10px 12px;border:0;border-radius:7px;background:none;color:var(--ink);text-align:left;font:600 14px var(--body);cursor:pointer}
+.settings-menu button:hover{background:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hero{padding:34px 0 10px}
+.lbl{font-size:14px;color:var(--muted);margin:0}
+.bal{font:800 clamp(46px,13vw,92px)/1 var(--head);letter-spacing:-.035em;margin:6px 0 10px;color:var(--ink)}
+.bal small{font-size:.5em;color:var(--brand);margin-right:4px}
+.lede{max-width:46ch;margin:0;color:var(--muted)}
+.stats{display:flex;flex-wrap:wrap;gap:10px 34px;margin:26px 0 8px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats div{min-width:120px}.stats b{display:block;font:800 22px var(--head)}.stats span{font-size:13px;color:var(--muted)}
+h2{font:800 22px var(--head);letter-spacing:-.01em;margin:34px 0 10px}
+.row{display:grid;grid-template-columns:54px 1fr auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .d{font-size:13px;color:var(--muted)}
+.row .t{font-weight:600}.row .c{font-size:13px;color:var(--muted)}
+.row .amt{font:800 17px var(--head);text-align:right;white-space:nowrap}
+.inc{color:var(--ok)}
+.void .t,.void .amt{text-decoration:line-through;opacity:.6}
+.meta{grid-column:2/4;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px}
+.ok{background:var(--okbg);color:var(--ok)}.pend{background:var(--warnbg);color:var(--warn)}.bad{background:var(--badbg);color:var(--bad)}
+.link{font:600 13px var(--body);color:var(--brand);background:none;border:0;padding:2px 0;cursor:pointer;text-decoration:underline}
+.btn{font:600 15px var(--body);padding:11px 18px;border-radius:10px;border:0;background:var(--brand);color:var(--on-brand);cursor:pointer}
+.btn.alt{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn.sm{padding:6px 12px;font-size:13px}.btn.no{background:var(--bad);color:#fff}
+.bars div{display:grid;grid-template-columns:96px 1fr 84px;gap:10px;align-items:center;font-size:14px;margin:7px 0}
+.bars i{display:block;height:12px;border-radius:3px;background:var(--brand)}
+.bars span:last-child{text-align:right;font-weight:600}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+input,select{width:100%;font:16px var(--body);padding:10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.full{grid-column:1/-1}
+.msg{min-height:22px;margin:10px 0 0;font-size:14px;font-weight:600}.msg.e{color:var(--bad)}.msg.g{color:var(--ok)}
+.log{list-style:none;margin:0;padding:0;font-size:14px}
+.log li{padding:8px 0;border-bottom:1px dashed var(--line);display:flex;gap:10px}
+.log time{color:var(--muted);min-width:62px;font-size:13px}
+.empty{color:var(--muted);padding:14px 0}
+.ov{position:fixed;inset:0;background:rgba(5,10,20,.75);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+.ov div{background:var(--surface);border-radius:14px;padding:14px;max-width:420px;width:100%;text-align:center}
+.ov img{max-width:100%;max-height:60vh;border-radius:8px}
+.flt{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px}.flt button{font:600 13px var(--body);padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.flt button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.vote{display:inline-flex;gap:6px}.vb{font:600 12px var(--body);padding:4px 10px;border-radius:999px;border:1.5px solid var(--ok);background:transparent;color:var(--ok);cursor:pointer}.vb.q{border-color:var(--warn);color:var(--warn)}.vb.on{background:var(--ok);color:var(--bg)}.vb.q.on{background:var(--warn)}
+.ov .dt{max-height:85vh;overflow:auto;text-align:left}.dt h3{font:800 20px var(--head);margin:0 0 4px}.dt h4{font:800 15px var(--head);margin:16px 0 6px}.dt img{display:block;margin:10px auto}
+.tl{margin:0;padding-left:18px;font-size:14px}.tl li{margin-bottom:6px}.qm{background:var(--warnbg);padding:8px 10px;border-radius:8px;font-size:14px;margin:6px 0}
+textarea{width:100%;font:16px var(--body);padding:10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-height:80px}
+footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.bars div{grid-template-columns:78px 1fr 72px}}
+@media print{header .seg,.noprint,footer,.panel{display:none!important}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><div class="brand">Hayag</div><div class="org" id="org"></div></div>
+  <div class="header-tools noprint">
+    <div class="seg" role="group" aria-label="Viewing as" id="seg"></div>
+    <button class="btn alt sm" type="button" data-a="export" title="Download the ledger as a CSV file for Excel">Export for Excel (.csv)</button>
+    <button class="btn alt sm" type="button" data-a="login" id="login-link" hidden>Log in / Sign up</button>
+    <div class="settings-wrap">
+      <button class="settings-btn" type="button" data-a="settings" aria-label="Settings" aria-expanded="false" title="Settings">&#9881;</button>
+      <div class="settings-menu" id="settings-menu" hidden>
+        <button type="button" data-a="logout">Log out</button>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+<footer><span>Prototype with sample data. Receipts shown are placeholders.</span><button class="link noprint" id="reset-link" data-a="reset">Reset demo data</button></footer>
+</div>
+<div id="ov"></div>
+<script>
+const KEY="hayag-demo-v2",ORG="Barangay Poblacion Youth Fund";
+const rc=(n,a)=>"data:image/svg+xml;utf8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="320"><rect width="240" height="320" fill="#fff" stroke="#bbb"/><g font-family="monospace" fill="#222"><text x="20" y="40" font-size="16" font-weight="bold">SAMPLE RECEIPT</text><text x="20" y="66" font-size="12">No. '+n+'</text><line x1="20" y1="86" x2="220" y2="86" stroke="#888" stroke-dasharray="4"/><text x="20" y="130" font-size="13">TOTAL</text><text x="20" y="160" font-size="26" font-weight="bold">PHP '+a+'</text><text x="20" y="290" font-size="11">Thank you. Come again.</text></g></svg>');
+const seed=()=>fix({e:[
+{id:1,d:"2026-11-02",k:"in",t:"Barangay assembly donations",c:"Donations",a:5000,r:rc(1001,"5,000"),s:"approved"},
+{id:2,d:"2026-11-04",k:"in",t:"Youth league registration fees",c:"Fees",a:8400,r:rc(1002,"8,400"),s:"approved"},
+{id:3,d:"2026-11-06",k:"out",t:"Paint and brushes for basketball court",c:"Projects",a:2650,r:rc(2041,"2,650"),s:"approved"},
+{id:4,d:"2026-11-09",k:"out",t:"Tarpaulin for clean-up drive",c:"Printing",a:480,r:rc(2042,"480"),s:"approved"},
+{id:5,d:"2026-11-11",k:"out",t:"Snacks for clean-up volunteers",c:"Food",a:1320,r:rc(2043,"1,320"),s:"approved"},
+{id:6,d:"2026-11-14",k:"out",t:"Trophies for youth league",c:"Awards",a:1850,r:rc(2044,"1,850"),s:"voided"},
+{id:7,d:"2026-11-17",k:"out",t:"Sound system rental",c:"Events",a:2000,r:rc(2045,"2,000"),s:"pending"},
+{id:8,d:"2026-11-18",k:"out",t:"Extension cords",c:"Supplies",a:560,r:rc(2046,"560"),s:"pending"}],
+log:[
+{t:"Nov 14",w:"Treasurer",x:"Added expense: Trophies for youth league (₱1,850)"},
+{t:"Nov 15",w:"President",x:"Approved: Trophies for youth league"},
+{t:"Nov 16",w:"Treasurer",x:"Voided: Trophies for youth league. Reason: duplicate purchase order"},
+{t:"Nov 17",w:"Treasurer",x:"Added expense: Sound system rental (₱2,000)"},
+{t:"Nov 18",w:"Treasurer",x:"Added expense: Extension cords (₱560)"}],n:9});
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(x){}S=S||seed();
+let role="public",note=null,flt="all";
+function fix(s){s.my=s.my||{};const M=d=>"Nov "+Number(d.split("-")[2]);s.e.forEach((x,i)=>{if(!x.h){x.h=[{t:M(x.d),w:"Treasurer",x:"Entry created"}];if(x.s!=="pending")x.h.push({t:M(x.d),w:"President",x:"Approved"});if(x.s==="voided")x.h.push({t:"Nov 16",w:"Treasurer",x:"Voided. Reason: duplicate purchase order"})}if(!x.v)x.v={c:x.s==="approved"?5+(i*7)%11:0,q:0,m:[]}});const t=s.e.find(y=>y.id===4);if(t&&!t.v.q){t.v.q=1;t.v.m.push({t:"Nov 12",x:"Is the ₱480 for one tarpaulin or for all of them?"})}return s}
+function pubAct(x){if(x.s!=="approved")return"";const m=(S.my||{})[x.id],v=x.v;if(!isLoggedIn())return `<span class="vote"><button class="vb" data-a="login">Log in to confirm (${v.c})</button><button class="vb q" data-a="login">Log in to question (${v.q})</button></span>`;return `<span class="vote"><button class="vb ${m==="c"?"on":""}" data-a="conf" data-id="${x.id}" aria-pressed="${m==="c"}">✓ Confirm ${v.c}</button><button class="vb q ${m==="q"?"on":""}" data-a="ques" data-id="${x.id}">? Question ${v.q}</button></span>`}
+function det(x){const v=x.v;return `<div class="ov" data-a="x"><div class="dt" data-a="keep"><h3>${esc(x.t)}</h3><p class="c">${fd(x.d)}, ${esc(x.c)}, ₱${peso(x.a)} ${chip(x.s)}</p>${x.r?`<img alt="Receipt" src="${x.r}">`:""}<h4>History of this entry</h4><ol class="tl">${x.h.map(h=>`<li><b>${esc(h.w)}</b>, ${esc(h.t)}: ${esc(h.x)}</li>`).join("")}</ol><h4>Community response</h4><p>${v.c} confirmed, ${v.q} questioned</p>${v.m.map(m=>`<p class="qm"><b>${esc(m.t)}</b> ${esc(m.x)}</p>`).join("")}<button class="btn sm" data-a="x">Close</button></div></div>`}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(x){}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const peso=n=>Number(n).toLocaleString("en-PH",{minimumFractionDigits:0,maximumFractionDigits:2});
+const fd=d=>new Date(d+"T00:00").toLocaleDateString("en-PH",{month:"short",day:"numeric"});
+const today=()=>new Date().toISOString().slice(0,10);
+const logit=(w,x)=>S.log.push({t:fd(today()),w,x});
+const isLoggedIn=()=>sessionStorage.getItem("hayag-demo-session")==="active";
+function exportLedger(){
+  const cell=value=>{
+    let text=String(value);
+    if(/^[\t\r\n ]*[=+\-@]/.test(text))text="'"+text;
+    return '"'+text.replace(/"/g,'""')+'"';
+  };
+  const rows=[["Date","Type","Description","Category","Amount (PHP)","Status","Receipt attached","Confirmations","Questions"]];
+  S.e.slice().sort((a,b)=>a.d.localeCompare(b.d)).forEach(x=>{
+    rows.push([x.d,x.k==="in"?"Income":"Expense",x.t,x.c,x.a,x.s,x.r?"Yes":"No",x.v?x.v.c:0,x.v?x.v.q:0]);
+  });
+  const csv="\uFEFF"+rows.map(row=>row.map(cell).join(",")).join("\r\n");
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="hayag-ledger-"+today()+".csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+const CATS=["Projects","Printing","Food","Awards","Events","Supplies","Donations","Fees","Other"];
+const chip=s=>s==="approved"?'<span class="chip ok">Approved</span>':s==="pending"?'<span class="chip pend">Awaiting approval</span>':s==="voided"?'<span class="chip bad">Voided</span>':'<span class="chip bad">Rejected</span>';
+function rowHTML(x,act,pub){if(pub)return rowOld(x,pubAct(x));return rowOld(x,act)}
+function rowOld(x,act){
+  const sign=x.k==="in"?"+":"−";
+  return `<div class="row ${x.s==="voided"?"void":""}"><span class="d">${fd(x.d)}</span><div><div class="t">${esc(x.t)}</div><div class="c">${esc(x.c)}</div></div><span class="amt ${x.k==="in"?"inc":""}">${sign}₱${peso(x.a)}</span><div class="meta">${chip(x.s)}${x.v&&x.v.q?`<span class="chip pend">Questioned by ${x.v.q}</span>`:""}${x.r?`<button class="link" data-a="rc" data-id="${x.id}">View receipt</button>`:'<span class="c">No receipt</span>'}<button class="link" data-a="det" data-id="${x.id}">History</button>${act||""}</div></div>`;
+}
+function totals(){
+  const ap=S.e.filter(x=>x.s==="approved");
+  const inc=ap.filter(x=>x.k==="in").reduce((s,x)=>s+x.a,0),out=ap.filter(x=>x.k==="out").reduce((s,x)=>s+x.a,0);
+  const ex=ap.filter(x=>x.k==="out");
+  return{inc,out,bal:inc-out,pend:S.e.filter(x=>x.s==="pending").length,withR:ex.filter(x=>x.r).length,ex:ex.length,ap};
+}
+function logHTML(){return `<ul class="log">${S.log.slice().reverse().map(l=>`<li><time>${esc(l.t)}</time><span><b>${esc(l.w)}</b>: ${esc(l.x)}</span></li>`).join("")}</ul>`}
+function publicView(){
+  const T=totals(),shown=S.e.filter(x=>x.s==="approved"||x.s==="voided").sort((a,b)=>b.d.localeCompare(a.d));
+  const cat={};T.ap.filter(x=>x.k==="out").forEach(x=>cat[x.c]=(cat[x.c]||0)+x.a);
+  const max=Math.max(1,...Object.values(cat));
+  return `<section class="hero"><p class="lbl">Available funds, approved entries only</p><div class="bal"><small>₱</small>${peso(T.bal)}</div><p class="lede">This is the open book of the ${esc(ORG)}. Every expense has a receipt, and every change is logged.</p></section>
+<div class="stats"><div><b>₱${peso(T.inc)}</b><span>Collected</span></div><div><b>₱${peso(T.out)}</b><span>Spent</span></div><div><b>${T.withR} of ${T.ex}</b><span>Expenses with receipts</span></div><div><b>${T.pend}</b><span>Awaiting approval</span></div><div><b>${S.e.reduce((s,x)=>s+(x.v?x.v.c:0),0)}</b><span>Community confirmations</span></div><div><b>${S.e.reduce((s,x)=>s+(x.v?x.v.q:0),0)}</b><span>Open questions</span></div></div>
+<button class="btn alt noprint" data-a="print">Print or save report</button>
+<h2>Where the money went</h2><div class="bars">${Object.entries(cat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div><span>${esc(k)}</span><i style="width:${Math.round(v/max*100)}%"></i><span>₱${peso(v)}</span></div>`).join("")||'<p class="empty">No approved expenses yet.</p>'}</div>
+<h2>All entries</h2><p class="lbl">Log in or sign up to confirm an entry or ask a question. Tap History to see every change.</p><div class="flt noprint">${[["all","All"],["out","Expenses"],["in","Income"],["q","Questioned"]].map(([k,v])=>`<button data-a="flt" data-id="${k}" aria-pressed="${flt===k}">${v}</button>`).join("")}</div>${shown.filter(x=>flt==="all"||(flt==="q"?x.v.q>0:x.k===flt)).map(x=>rowHTML(x,"",1)).join("")||'<p class="empty">No entries match.</p>'}
+<h2>Change history</h2>${logHTML()}`;
+}
+function treasurerView(){
+  const mine=S.e.slice().sort((a,b)=>b.id-a.id);
+  return `<h2>Add an entry</h2><div class="panel"><div class="grid">
+<div><label for="f-k">Type</label><select id="f-k"><option value="out">Expense</option><option value="in">Income</option></select></div>
+<div><label for="f-d">Date</label><input id="f-d" type="date" value="${today()}"></div>
+<div class="full"><label for="f-t">What was it for?</label><input id="f-t" placeholder="e.g. Rice for feeding program"></div>
+<div><label for="f-c">Category</label><select id="f-c">${CATS.map(c=>`<option>${c}</option>`).join("")}</select></div>
+<div><label for="f-a">Amount (₱)</label><input id="f-a" type="number" min="0" step="0.01" inputmode="decimal"></div>
+<div class="full"><label for="f-f">Receipt photo (required for expenses)</label><input id="f-f" type="file" accept="image/*"></div>
+</div><button class="btn" style="margin-top:14px" data-a="add">Submit for approval</button><p class="msg ${note?note.k:""}" role="status">${note?esc(note.m):""}</p></div>
+<h2>Your entries</h2>${mine.map(x=>rowHTML(x,x.s==="approved"||x.s==="pending"?`<button class="link" data-a="edit" data-id="${x.id}">Edit</button><button class="link" data-a="void" data-id="${x.id}">Void</button>`:"")).join("")}`;
+}
+function presidentView(){
+  const q=S.e.filter(x=>x.s==="pending");
+  return `<h2>Waiting for your approval</h2>${q.length?q.map(x=>rowHTML(x,`<button class="btn sm" data-a="ok" data-id="${x.id}">Approve</button><button class="btn sm no" data-a="no" data-id="${x.id}">Reject</button>`)).join(""):'<p class="empty">Nothing to approve. New entries from the treasurer will show up here.</p>'}<p class="lbl">Approved entries appear on the public page right away.</p><h2>Change history</h2>${logHTML()}`;
+}
+function render(){
+  $("#org").textContent=ORG;
+  $("#login-link").hidden=isLoggedIn();
+  $("#reset-link").hidden=!isLoggedIn();
+  const views=isLoggedIn()?[["public","Public view"],["treasurer","Treasurer"],["president","President"]]:[["public","Public view"]];
+  if(!views.some(([key])=>key===role))role="public";
+  $("#seg").innerHTML=views.map(([k,v])=>`<button data-a="role" data-id="${k}" aria-pressed="${role===k}">${v}</button>`).join("");
+  $("#app").innerHTML=role==="public"?publicView():role==="treasurer"?treasurerView():presidentView();
+  note=null;
+}
+function shrink(f){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const m=640,s=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.7))};i.onerror=()=>res(null);i.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(f)})}
+function msg(m,k){const p=document.querySelector(".msg");if(p){p.textContent=m;p.className="msg "+k}}
+document.addEventListener("pointerdown",e=>{
+  if(!e.target.closest(".settings-wrap")){
+    const menu=$("#settings-menu");
+    if(menu){menu.hidden=true;document.querySelector('[data-a="settings"]')?.setAttribute("aria-expanded","false")}
+  }
+});
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-a]");if(!b)return;
+  const a=b.dataset.a,id=+b.dataset.id,x=S.e.find(y=>y.id===id);
+  if(a==="settings"){
+    const menu=$("#settings-menu"),open=menu.hidden;
+    menu.hidden=!open;
+    b.setAttribute("aria-expanded",open?"true":"false");
+    return;
+  }
+  if(a==="login"){window.location.href="index.html";return}
+  if(a==="logout"){sessionStorage.removeItem("hayag-demo-session");window.location.replace("index.html");return}
+  if(a==="keep")return;if(a==="flt"){flt=b.dataset.id;render();return}if(a==="role"){if(!isLoggedIn()&&b.dataset.id!=="public")return;role=b.dataset.id;render();return}
+  if(a==="print"){window.print();return}
+  if(a==="export"){exportLedger();return}
+  if((a==="conf"||a==="ques"||a==="qsend")&&!isLoggedIn()){window.location.href="index.html";return}
+  if(a==="reset"){if(!isLoggedIn())return;S=seed();save();render();return}
+  if(a==="rc"&&x){$("#ov").innerHTML=`<div class="ov" data-a="x"><div><img alt="Receipt for ${esc(x.t)}" src="${x.r}"><p>${esc(x.t)}, ₱${peso(x.a)}</p><button class="btn sm" data-a="x">Close</button></div></div>`;return}
+  if(a==="x"){$("#ov").innerHTML="";return}
+  if(a==="det"&&x){$("#ov").innerHTML=det(x);return}
+  if(a==="conf"&&x){const m=S.my[id];if(m==="q")return;if(m==="c"){x.v.c--;delete S.my[id]}else{x.v.c++;S.my[id]="c";x.h.push({t:fd(today()),w:"Community",x:"Confirmed by a viewer"})}save();render();return}
+  if(a==="ques"&&x){if(S.my[id]==="q"){$("#ov").innerHTML=det(x);return}$("#ov").innerHTML=`<div class="ov" data-a="x"><div class="dt" data-a="keep"><h3>Question this entry</h3><p>${esc(x.t)}, ₱${peso(x.a)}</p><label for="q-t">What looks wrong or unclear?</label><textarea id="q-t"></textarea><p class="msg e" id="q-m"></p><button class="btn sm" data-a="qsend" data-id="${id}">Send question</button> <button class="btn sm alt" data-a="x">Cancel</button></div></div>`;return}
+  if(a==="qsend"&&x){const t=$("#q-t").value.trim();if(!t){$("#q-m").textContent="Write what you’re questioning so the treasurer can answer.";return}if(S.my[id]==="c")x.v.c--;x.v.q++;S.my[id]="q";x.v.m.push({t:fd(today()),x:t});x.h.push({t:fd(today()),w:"Community",x:"Question raised: "+t});logit("Community","Questioned: "+x.t);save();$("#ov").innerHTML="";render();return}
+  if(a==="edit"&&x){$("#ov").innerHTML=`<div class="ov" data-a="x"><div class="dt" data-a="keep"><h3>Edit entry</h3><p class="c">The change, your reason, and the date will show in this entry’s public history. Approved entries go back for re-approval.</p><label for="e-t">Description</label><input id="e-t" value="${esc(x.t)}"><label for="e-a" style="margin-top:10px">Amount (₱)</label><input id="e-a" type="number" step="0.01" value="${x.a}"><label for="e-r" style="margin-top:10px">Reason for the change</label><input id="e-r" placeholder="e.g. Typo in the amount"><p class="msg e" id="e-m"></p><button class="btn sm" data-a="esave" data-id="${id}">Save change</button> <button class="btn sm alt" data-a="x">Cancel</button></div></div>`;return}
+  if(a==="esave"&&x){const na=parseFloat($("#e-a").value),nt=$("#e-t").value.trim(),rs=$("#e-r").value.trim();if(!nt||!(na>0)){$("#e-m").textContent="Add a description and an amount above zero.";return}if(!rs){$("#e-m").textContent="Say why you’re editing. Viewers will see this reason.";return}const ch=[];if(na!==x.a)ch.push(`Amount changed from ₱${peso(x.a)} to ₱${peso(na)}`);if(nt!==x.t)ch.push(`Description changed from “${x.t}” to “${nt}”`);if(!ch.length){$("#ov").innerHTML="";return}ch.forEach(c=>x.h.push({t:fd(today()),w:"Treasurer",x:c+". Reason: "+rs}));x.a=na;x.t=nt;if(x.s==="approved"){x.s="pending";x.h.push({t:fd(today()),w:"System",x:"Sent back to the president for re-approval"})}logit("Treasurer","Edited: "+nt+". Reason: "+rs);save();$("#ov").innerHTML="";render();return}
+  if(a==="ok"&&x){x.s="approved";x.h.push({t:fd(today()),w:"President",x:"Approved"});logit("President","Approved: "+x.t);save();render();return}
+  if(a==="no"&&x){x.s="rejected";x.h.push({t:fd(today()),w:"President",x:"Rejected"});logit("President","Rejected: "+x.t);save();render();return}
+  if(a==="void"&&x){x.s="voided";x.h.push({t:fd(today()),w:"Treasurer",x:"Voided"});logit("Treasurer","Voided: "+x.t);save();render();return}
+  if(a==="add"){
+    const k=$("#f-k").value,t=$("#f-t").value.trim(),amt=parseFloat($("#f-a").value),f=$("#f-f").files[0];
+    if(!t||!(amt>0)){msg("Add a description and an amount above zero.","e");return}
+    if(k==="out"&&!f){msg("Add a receipt photo. Expenses can’t be submitted without one.","e");return}
+    b.disabled=true;
+    const r=f?await shrink(f):null;
+    S.e.push({id:S.n++,d:$("#f-d").value||today(),k,t,c:$("#f-c").value,a:amt,r,s:"pending",h:[{t:fd(today()),w:"Treasurer",x:"Entry created, awaiting approval"}],v:{c:0,q:0,m:[]}});
+    logit("Treasurer",`Added ${k==="out"?"expense":"income"}: ${t} (₱${peso(amt)})`);save();render();
+    msg("Submitted. The president can now approve it.","g");return;
+  }
+});
+render();
+</script>
+</body>
+</html>
